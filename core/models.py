@@ -84,3 +84,28 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+class UserMenuAssignment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='menu_assignments')
+    menu_level1 = models.ForeignKey(MenuLevel1, on_delete=models.CASCADE)
+    menu_level2 = models.ForeignKey(MenuLevel2, on_delete=models.CASCADE)
+    menu_level3 = models.ForeignKey(MenuLevel3, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'menu_level1', 'menu_level2', 'menu_level3')
+
+    def __str__(self):
+        return f"{self.user.username} assigned to {self.menu_level1} > {self.menu_level2} > {self.menu_level3}"
+
+
+
+class NotificationLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.ticket.title}"

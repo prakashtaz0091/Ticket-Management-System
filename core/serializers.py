@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import MenuLevel1, MenuLevel2, MenuLevel3, TicketStatus, TicketPriority, Ticket
+from .models import MenuLevel1, MenuLevel2, MenuLevel3, TicketStatus, TicketPriority, Ticket, UserMenuAssignment
+
+
+class UserMenuAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMenuAssignment
+        fields = '__all__'
+        
+        
 
 class MenuLevel1Serializer(serializers.ModelSerializer):
     class Meta:

@@ -2,33 +2,55 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .decorators import permission_required
-from django.http import JsonResponse
-
-from rest_framework import viewsets
-from .models import MenuLevel1, MenuLevel2, MenuLevel3
-from .serializers import MenuLevel1Serializer, MenuLevel2Serializer, MenuLevel3Serializer
-from .utils import has_permission
-from rest_framework.permissions import BasePermission
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import MenuLevel1, MenuLevel2, MenuLevel3, UserMenuAssignment
+from .serializers import MenuLevel1Serializer, MenuLevel2Serializer, MenuLevel3Serializer, UserMenuAssignmentSerializer
 from .models import Ticket, TicketStatus, TicketPriority
 from .serializers import TicketSerializer, TicketStatusSerializer, TicketPrioritySerializer
+from .permissions import HasTicketPermission, HasMenuPermission, HasManageStatusPermission, HasManagePriorityPermission
+from .utils import has_permission
+from rest_framework.decorators import api_view
 
 
-class HasTicketPermission(BasePermission):
-    def has_permission(self, request, view):
-        if view.action == 'create':
-            return has_permission(request.user, 'can_create_ticket')
-        if view.action in ['update', 'partial_update']:
-            return has_permission(request.user, 'can_edit_ticket')
-        if view.action == 'destroy':
-            return has_permission(request.user, 'can_delete_ticket')
-        return has_permission(request.user, 'can_view_ticket')
 
+
+@api_view(['GET'])
+def user_assigned_menus(request):
+    user = request.user
+    assignments = UserMenuAssignment.objects.filter(user=user)
+
+    menu_level1_ids = assignments.values_list('menu_level1', flat=True).distinct()
+    menu_level2_ids = assignments.values_list('menu_level2', flat=True).distinct()
+    menu_level3_ids = assignments.values_list('menu_level3', flat=True).distinct()
+
+    menus = {
+        'menu_level1': MenuLevel1Serializer(MenuLevel1.objects.filter(id__in=menu_level1_ids), many=True).data,
+        'menu_level2': MenuLevel2Serializer(MenuLevel2.objects.filter(id__in=menu_level2_ids), many=True).data,
+        'menu_level3': MenuLevel3Serializer(MenuLevel3.objects.filter(id__in=menu_level3_ids), many=True).data,
+    }
+    return Response(menus)
+
+
+
+class UserMenuAssignmentViewSet(viewsets.ModelViewSet):
+    queryset = UserMenuAssignment.objects.all()
+    serializer_class = UserMenuAssignmentSerializer
+    permission_classes = [HasMenuPermission]
+    
+    
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all().select_related('menu_level3', 'priority', 'status')
     serializer_class = TicketSerializer
     permission_classes = [HasTicketPermission]
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if has_permission(self.request.user, 'can_view_all_tickets'):
+            return queryset
+        return queryset.filter(assigned_to=self.request.user)
+    
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -37,25 +59,14 @@ class TicketViewSet(viewsets.ModelViewSet):
 class TicketStatusViewSet(viewsets.ModelViewSet):
     queryset = TicketStatus.objects.all().order_by('weight')
     serializer_class = TicketStatusSerializer
-    permission_classes = [BasePermission]
-    
-    def has_permission(self, request, view):
-        return has_permission(request.user, 'can_manage_status')
-
+    permission_classes = [HasManageStatusPermission]
+ 
 
 class TicketPriorityViewSet(viewsets.ModelViewSet):
     queryset = TicketPriority.objects.all().order_by('weight')
     serializer_class = TicketPrioritySerializer
-    permission_classes = [BasePermission]
-    
-    def has_permission(self, request, view):
-        return has_permission(request.user, 'can_manage_priority')
-    
+    permission_classes = [HasManagePriorityPermission]
 
-
-class HasMenuPermission(BasePermission):
-    def has_permission(self, request, view):
-        return has_permission(request.user, "can_manage_menus")
 
 
 class MenuLevel1ViewSet(viewsets.ModelViewSet):
@@ -74,12 +85,6 @@ class MenuLevel3ViewSet(viewsets.ModelViewSet):
     queryset = MenuLevel3.objects.all()
     serializer_class = MenuLevel3Serializer
     permission_classes = [HasMenuPermission]
-
-
-@permission_required('can_create_ticket')
-def create_ticket_view(request):
-    return JsonResponse({"message": "Ticket created (not really, just testing permission)"})
-
 
 
 def login_view(request):
