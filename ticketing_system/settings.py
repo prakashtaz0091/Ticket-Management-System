@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'tailwind',
-    'theme'
+    'theme',
+    'drf_spectacular',
+
 ]
 TAILWIND_APP_NAME = 'theme'
 
@@ -83,10 +85,17 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
 
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Ticket Management API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
