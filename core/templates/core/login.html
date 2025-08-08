@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+
+{% block content %}
+<main class="h-[100vh] bg-base-200 flex flex-col justify-center items-center">
+
+
+    <form method="POST" class="w-1/3 ">
+        {% csrf_token %}
+        <fieldset class="fieldset bg-base-200 border-base-400 rounded-box border p-4 text-xl text-base-content">
+            <legend class="fieldset-legend text-2xl uppercase">Login</legend>
+
+            <label class="label">Username</label>
+            <input type="text" class="input w-full mb-3" placeholder="Username" name="username" />
+
+            <label class="label">Password</label>
+            <input type="password" class="input w-full mb-3" placeholder="Password" name="password" />
+
+
+            {% for messasge in messages %}
+            <p class="text-sm text-red-500 ">{{ messasge }}</p>
+            {% endfor %}
+
+            <button class="btn btn-neutral mt-4">Login</button>
+        </fieldset>
+
+    </form>
+
+</main>
+{% endblock %}
