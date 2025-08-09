@@ -4,6 +4,19 @@
 This project implements a **dynamic roles and permissions system** mapped to resources and actions, built with Django and Django REST Framework. It also includes Tailwind CSS setup for possible template-based UI.
 ---
 
+## Deliverables
+
+- **Django ReST Framework** for API development
+- **Django** for backend development
+- **Django REST Framework Simple JWT** for JWT authentication
+- **DRF-Spectacular** for API documentation
+- **Django Admin** customization for ease of use and security
+- **Example seed data** as managed commands for initial setup
+- **README.md** for project documentation and instructions
+- **Basic TestCases** for models and auth endpoint
+- **Dockerfile** for containerization
+- **Tailwind CSS** for styling
+
 ## Getting Started
 
 Follow these steps to set up and run the system locally:
