@@ -2,11 +2,32 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class Action(models.Model):
+    resource = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = ("resource", "name")
+
+    def __str__(self):
+        return f"{self.resource}:{self.name}"
+
+
 class Permission(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    actions = models.ManyToManyField(Action, related_name="permissions")
 
     def __str__(self):
         return self.name
+
+    @property
+    def actions_list(self):
+        if not hasattr(self, "__cached_actions_list"):
+            self.__cached_actions_list = [
+                f"{resource}:{name}"
+                for resource, name in self.actions.values_list("resource", "name")
+            ]
+        return self.__cached_actions_list
 
 
 class Role(models.Model):
@@ -101,15 +122,15 @@ class UserMenuAssignment(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="menu_assignments"
     )
-    menu_level1 = models.ForeignKey(MenuLevel1, on_delete=models.CASCADE)
-    menu_level2 = models.ForeignKey(MenuLevel2, on_delete=models.CASCADE)
-    menu_level3 = models.ForeignKey(MenuLevel3, on_delete=models.CASCADE)
+    menu = models.ForeignKey(
+        MenuLevel3, on_delete=models.CASCADE, related_name="menu_assignments"
+    )
 
     class Meta:
-        unique_together = ("user", "menu_level1", "menu_level2", "menu_level3")
+        unique_together = ("user", "menu")
 
     def __str__(self):
-        return f"{self.user.username} assigned to {self.menu_level1} > {self.menu_level2} > {self.menu_level3}"
+        return f"{self.user.username} assigned to {self.menu}"
 
 
 class NotificationLog(models.Model):

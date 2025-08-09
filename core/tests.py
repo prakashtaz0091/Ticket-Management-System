@@ -2,6 +2,8 @@ from django.test import TestCase
 from .models import UserProfile, Role, Permission
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from rest_framework.test import APIClient, APITestCase
+from django.urls import reverse_lazy
 
 
 class TestUserAndProfileModel(TestCase):
@@ -29,27 +31,51 @@ class TestUserAndProfileModel(TestCase):
 
 class TestRoleAndPermissionModel(TestCase):
     def setUp(self):
-        role1 = Role.objects.create(name="Test Role")
-        role2 = Role.objects.create(name="Test Role 2")
+        self.role1 = Role.objects.create(name="Test Role")
+        self.role2 = Role.objects.create(name="Test Role 2")
 
-        perm1 = Permission.objects.create(name="Test Permission")
-        perm2 = Permission.objects.create(name="Test Permission 2")
+        self.perm1 = Permission.objects.create(name="Test Permission")
+        self.perm2 = Permission.objects.create(name="Test Permission 2")
 
-        role1.permissions.add(perm1)
-        role2.permissions.add(perm2)
+        self.role1.permissions.add(self.perm1)
+        self.role2.permissions.add(self.perm2)
 
     def test_unique_role_name(self):
-        self.assertRaises(IntegrityError, Role.objects.create, name="Test Role")
+        with self.assertRaises(IntegrityError):
+            Role.objects.create(name="Test Role")
 
     def test_unique_permission_name(self):
-        self.assertRaises(
-            IntegrityError, Permission.objects.create, name="Test Permission"
-        )
+        with self.assertRaises(IntegrityError):
+            Permission.objects.create(name="Test Permission")
 
     def test_role_permissions(self):
-        role1 = Role.objects.get(name="Test Role")
-        perm1 = Permission.objects.get(name="Test Permission")
+        self.assertIn(self.perm1, self.role1.permissions.all())
+        self.assertNotIn(self.perm2, self.role1.permissions.all())
 
-        perm2 = Permission.objects.get(name="Test Permission 2")
-        self.assertIn(perm1, role1.permissions.all())
-        self.assertNotIn(perm2, role1.permissions.all())
+
+class TestLoginAPI(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username="testuser", password="testpassword", email="test@email"
+        )
+
+    def test_login_successful_get_token(self):
+        login_path = reverse_lazy("token_obtain_pair")
+
+        data = {"username": "testuser", "password": "testpassword"}
+        response = self.client.post(login_path, data, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
+
+    def test_wrong_credentials_no_token(self):
+        login_path = reverse_lazy("token_obtain_pair")
+
+        data = {"username": "testuser", "password": "wrongpassword"}
+        response = self.client.post(login_path, data, format="json")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
