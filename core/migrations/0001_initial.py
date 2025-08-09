@@ -15,119 +15,317 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='MenuLevel1',
+            name="MenuLevel1",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='TicketPriority',
+            name="TicketPriority",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('weight', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("weight", models.IntegerField(default=0)),
             ],
             options={
-                'verbose_name_plural': 'TicketPriorities',
+                "verbose_name_plural": "TicketPriorities",
             },
         ),
         migrations.CreateModel(
-            name='TicketStatus',
+            name="TicketStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('weight', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("weight", models.IntegerField(default=0)),
             ],
             options={
-                'verbose_name_plural': 'TicketStatus',
+                "verbose_name_plural": "TicketStatus",
             },
         ),
         migrations.CreateModel(
-            name='Action',
+            name="Action",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('resource', models.CharField(max_length=100)),
-                ('name', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("resource", models.CharField(max_length=100)),
+                ("name", models.CharField(max_length=200)),
             ],
             options={
-                'unique_together': {('resource', 'name')},
+                "unique_together": {("resource", "name")},
             },
         ),
         migrations.CreateModel(
-            name='MenuLevel2',
+            name="MenuLevel2",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='children', to='core.menulevel1')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="children",
+                        to="core.menulevel1",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MenuLevel3',
+            name="MenuLevel3",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='children', to='core.menulevel2')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="children",
+                        to="core.menulevel2",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Permission',
+            name="Permission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('actions', models.ManyToManyField(related_name='permissions', to='core.action')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                (
+                    "actions",
+                    models.ManyToManyField(
+                        related_name="permissions", to="core.action"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Role',
+            name="Role",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('permissions', models.ManyToManyField(related_name='roles', to='core.permission')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                (
+                    "permissions",
+                    models.ManyToManyField(related_name="roles", to="core.permission"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Ticket',
+            name="Ticket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_tickets', to=settings.AUTH_USER_MODEL)),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_tickets', to=settings.AUTH_USER_MODEL)),
-                ('menu_level3', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.menulevel3')),
-                ('priority', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.ticketpriority')),
-                ('status', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.ticketstatus')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_tickets",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_tickets",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "menu_level3",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.menulevel3",
+                    ),
+                ),
+                (
+                    "priority",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.ticketpriority",
+                    ),
+                ),
+                (
+                    "status",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.ticketstatus",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='NotificationLog',
+            name="NotificationLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('ticket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.ticket')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "ticket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.ticket"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserProfile',
+            name="UserProfile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.role')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "role",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.role",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserMenuAssignment',
+            name="UserMenuAssignment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('menu', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='menu_assignments', to='core.menulevel3')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='menu_assignments', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "menu",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="menu_assignments",
+                        to="core.menulevel3",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="menu_assignments",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'menu')},
+                "unique_together": {("user", "menu")},
             },
         ),
     ]

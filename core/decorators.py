@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 # from .utils import has_permission
 from functools import wraps
 
