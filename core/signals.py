@@ -37,4 +37,6 @@ def ticket_assignment_changed(sender, instance, **kwargs):
         msg = f"Ticket '{instance.title}' was reassigned to {instance.assigned_to.username if instance.assigned_to else 'nobody'}."
         print("[NOTIFICATION]", msg)
 
-        NotificationLog.objects.create(user=instance.assigned_to, ticket=instance, message=msg)
+        NotificationLog.objects.create(
+            user=instance.assigned_to, ticket=instance, message=msg
+        )
