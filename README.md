@@ -160,3 +160,30 @@ class RoleBasedPermission(BasePermission):
 - The system is designed with flexibility so you can extend it with new roles, permissions, resources, and actions without touching backend code.
 
 ---
+
+## Optional: Running with Docker
+
+You can run the project in a containerized environment using Docker:
+
+1. **Build the Docker image:**
+
+   ```bash
+   docker build -t ticket-management-system .
+   ```
+
+2. **Run the Docker container (exposes port 8000):**
+
+   ```bash
+   docker run -p 8000:8000 ticket-management-system
+   ```
+
+3. **Access the system at:**
+
+   ```
+   http://127.0.0.1:8000/
+   http://127.0.0.1:8000/admin/
+   http://127.0.0.1:8000/swagger-ui/
+   http://127.0.0.1:8000/redoc/
+   ```
+
+---
