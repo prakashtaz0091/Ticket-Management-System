@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     "tailwind",
     "theme",
     "drf_spectacular",
-    "django_extensions",
 ]
 TAILWIND_APP_NAME = "theme"
 
@@ -97,7 +96,7 @@ SIMPLE_JWT = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Ticket Management API",
-    "DESCRIPTION": "Your project description",
+    "DESCRIPTION": "API for ticket management system, dynamic roles and permissions.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }

@@ -9,33 +9,26 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write(self.style.NOTICE("Seeding example users and roles..."))
 
-        # setting up basic example data to test
+        # Use get_or_create to avoid duplicate unique constraint errors
+        supervisor_role, _ = Role.objects.get_or_create(name="SupervisorRole")
+        agent_role, _ = Role.objects.get_or_create(name="AgentRole")
+        normal_role, _ = Role.objects.get_or_create(name="NormalRole")
 
-        # create few roles (Note: create whatever roles and permissions you need, with the help of admin panel by admin user)
-        supervisor_role = Role.objects.create(name="SupervisorRole")
-        agent_role = Role.objects.create(name="AgentRole")
-        normal_role = Role.objects.create(name="NormalRole")
+        # Create superuser if not exists
+        if not User.objects.filter(username="admin").exists():
+            User.objects.create_superuser(username="admin", password="admin123")
 
-        # superuser to access admin panel
-        User.objects.create_superuser(username="admin", password="admin123")
+        # Different types of users
+        def create_user_if_not_exists(username, password, role):
+            user, created = User.objects.get_or_create(username=username)
+            if created:
+                user.set_password(password)
+                user.save()
+                user.profile.role = role
+                user.profile.save()
 
-        # different types of users
-        supervisor_user = User.objects.create_user(
-            username="supervisor", password="supervisor123"
-        )
-        supervisor_user.profile.role = supervisor_role  # assign role
-        supervisor_user.profile.save()
-
-        agent_user = User.objects.create_user(
-            username="agentuser", password="agentuser123"
-        )
-        agent_user.profile.role = agent_role  # assign role
-        agent_user.profile.save()
-
-        normal_user = User.objects.create_user(
-            username="normaluser", password="normaluser123"
-        )
-        normal_user.profile.role = normal_role  # assign role
-        normal_user.profile.save()
+        create_user_if_not_exists("supervisor", "supervisor123", supervisor_role)
+        create_user_if_not_exists("agentuser", "agentuser123", agent_role)
+        create_user_if_not_exists("normaluser", "normaluser123", normal_role)
 
         self.stdout.write(self.style.SUCCESS("Users and roles seeded."))

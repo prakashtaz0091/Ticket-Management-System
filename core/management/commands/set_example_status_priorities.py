@@ -10,24 +10,29 @@ class Command(BaseCommand):
             self.style.NOTICE("Seeding example statuses and priorities...")
         )
 
-        # setting up basic example data to test
-        TicketStatus.objects.bulk_create(
-            [
-                TicketStatus(name="New", weight=1),
-                TicketStatus(name="In Progress", weight=2),
-                TicketStatus(name="Resolved", weight=3),
-                TicketStatus(name="Closed", weight=4),
-            ]
-        )
+        statuses = [
+            {"name": "New", "weight": 1},
+            {"name": "In Progress", "weight": 2},
+            {"name": "Resolved", "weight": 3},
+            {"name": "Closed", "weight": 4},
+        ]
 
-        TicketPriority.objects.bulk_create(
-            [
-                TicketPriority(name="Low", weight=1),
-                TicketPriority(name="Medium", weight=2),
-                TicketPriority(name="High", weight=3),
-                TicketPriority(name="Critical", weight=4),
-            ]
-        )
+        priorities = [
+            {"name": "Low", "weight": 1},
+            {"name": "Medium", "weight": 2},
+            {"name": "High", "weight": 3},
+            {"name": "Critical", "weight": 4},
+        ]
+
+        for status in statuses:
+            TicketStatus.objects.get_or_create(
+                name=status["name"], defaults={"weight": status["weight"]}
+            )
+
+        for priority in priorities:
+            TicketPriority.objects.get_or_create(
+                name=priority["name"], defaults={"weight": priority["weight"]}
+            )
 
         self.stdout.write(
             self.style.SUCCESS("Seeding example statuses and priorities completed")
