@@ -4,10 +4,10 @@ from core.models import Action
 
 
 class Command(BaseCommand):
-    help = "Seeds initial roles, permissions, users, menus, statuses, and priorities."
+    help = "Sets actions which are core setup to link with permissions."
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.NOTICE("Seeding initial data..."))
+        self.stdout.write(self.style.NOTICE("Setting up actions..."))
 
         # for viewset default actions
         resources = [
@@ -35,9 +35,15 @@ class Command(BaseCommand):
 
         for resource in resources:
             for action in actions:
-                Action.objects.get_or_create(name=action, resource=resource)
+                description = f"Helps to {action} {resource}"
+                Action.objects.get_or_create(
+                    name=action, resource=resource, description=description
+                )
 
         for action, resource in custom_actions_resources:
-            Action.objects.get_or_create(name=action, resource=resource)
+            description = f"Helps to {action} from {resource}"
+            Action.objects.get_or_create(
+                name=action, resource=resource, description=description
+            )
 
-        self.stdout.write(self.style.SUCCESS("Seeding complete."))
+        self.stdout.write(self.style.SUCCESS("Actions setup completed."))

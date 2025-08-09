@@ -6,6 +6,8 @@ class Action(models.Model):
     resource = models.CharField(max_length=100)
     name = models.CharField(max_length=200)
 
+    description = models.TextField(null=True, blank=True)
+
     class Meta:
         unique_together = ("resource", "name")
 
